@@ -1,0 +1,12 @@
+name: test_webdriver
+description: A helper library to write selenium tests using pageobjects.
+version: 0.0.1-alpha
+
+environment:
+  sdk: '>=1.24.0 <2.0.0'
+
+dependencies:
+  pageloader: any
+  test: any
+  webdriver: any
+  yaml: any

@@ -1,0 +1,9 @@
+name: test_webdriver_example
+
+dependencies:
+  pageloader: any
+
+dev_dependencies:
+  test_webdriver:
+    path: ../
+  test: any
