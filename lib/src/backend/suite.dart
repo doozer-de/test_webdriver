@@ -6,6 +6,10 @@ import 'package:webdriver/io.dart';
 
 import 'configuration.dart';
 
+typedef Future<Configuration> _SuiteConfigurationLoader();
+typedef Future<WebDriver> _DriverFactory(
+    Uri driverUri, Map<String, String> capabilities);
+
 /// Provides the setup and teardown of a suite which initiates a webdriver by
 /// the provided environment variables.
 class Suite {
@@ -17,6 +21,14 @@ class Suite {
     return Zone.current[#test_webdriver.suite];
   }
 
+  /// Function used to load the configuration.
+  _SuiteConfigurationLoader configurationLoader = loadConfig;
+
+  /// Function used to initiate the [WebDriver].
+  _DriverFactory driverFactory = _defaultWebDriverFactory;
+
+  Map<String, String> environment = Platform.environment;
+
   Configuration configuration;
   String driverUri;
   WebDriver driver;
@@ -26,7 +38,7 @@ class Suite {
 
   Future handle(String testCase, [dynamic err]) async {
     if (configuration == null) {
-      configuration = await loadConfig();
+      configuration = await configurationLoader();
     }
 
     if (configuration.captureScreenshotOnSuccess && err == null) {
@@ -37,8 +49,9 @@ class Suite {
   }
 
   Future captureScreenshot(String t, bool err) async {
-    var file = new File(
-        '${configuration.screenshotPath}/${t}_${err ? 'error' : 'success'}.png');
+    var file = new File('${configuration.screenshotPath}/${t}_${err
+        ? 'error'
+        : 'success'}.png');
     return file.writeAsBytes(await driver.captureScreenshotAsList());
   }
 
@@ -49,22 +62,33 @@ class Suite {
   }
 
   Future setUp() async {
-    driverUri = Platform.environment['DRIVER_URI'];
+    driverUri = environment['DRIVER_URI'];
 
-    if (Platform.environment.containsKey('DRIVER_BROWSER')) {
-      capabilities['browser'] = Platform.environment['DRIVER_BROWSER'];
+    if (environment.containsKey('DRIVER_BROWSER')) {
+      capabilities['browser'] = environment['DRIVER_BROWSER'];
     }
 
-    if (Platform.environment.containsKey('DRIVER_PLATFORM')) {
-      capabilities['platform'] = Platform.environment['DRIVER_PLATFORM'];
+    if (environment.containsKey('DRIVER_PLATFORM')) {
+      capabilities['platform'] = environment['DRIVER_PLATFORM'];
     }
 
-    if (Platform.environment.containsKey('DRIVER_VERSION')) {
-      capabilities['version'] = Platform.environment['DRIVER_VERSION'];
+    if (environment.containsKey('DRIVER_VERSION')) {
+      capabilities['version'] = environment['DRIVER_VERSION'];
     }
 
-    driver = await createDriver(
-        uri: Uri.parse(driverUri),
+    driver = await driverFactory(Uri.parse(driverUri), capabilities);
+    loader = new WebDriverPageLoader(driver);
+  }
+
+  Future tearDown() {
+    return driver.quit();
+  }
+}
+
+Future<WebDriver> _defaultWebDriverFactory(
+        Uri driverUri, Map<String, String> capabilities) =>
+    createDriver(
+        uri: driverUri,
         desired: {}
           ..addAll(Capabilities.chrome)
           ..addAll(capabilities)
@@ -73,10 +97,3 @@ class Suite {
               'args': ['--headless']
             }
           }));
-    loader = new WebDriverPageLoader(driver);
-  }
-
-  Future tearDown() {
-    return driver.quit();
-  }
-}

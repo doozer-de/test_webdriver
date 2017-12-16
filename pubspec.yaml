@@ -10,3 +10,6 @@ dependencies:
   test: any
   webdriver: any
   yaml: any
+
+dev_dependencies:
+  mockito: any

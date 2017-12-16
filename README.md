@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/doozer-de/test_webdriver.svg?branch=master)](https://travis-ci.org/doozer-de/test_webdriver)
+
 `test_webdriver` provides simple utility functions to setup a test environment
 with a webdriver and pageloader. It makes it easier to receive pageobjects within
 the testcases.
