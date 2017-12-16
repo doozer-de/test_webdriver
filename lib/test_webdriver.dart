@@ -57,7 +57,8 @@ Function withPO(Function fn, {String screenshotName}) {
       } catch (ex) {
         exception = ex;
       } finally {
-        await suite.handle(screenshotName ?? new DateTime.now().toIso8601String(), exception);
+        await suite.handle(
+            screenshotName ?? new DateTime.now().toIso8601String(), exception);
         if (exception != null) {
           throw exception;
         }

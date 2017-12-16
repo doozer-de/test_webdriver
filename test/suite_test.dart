@@ -24,7 +24,8 @@ void main() {
 
       suite.environment = {'DRIVER_URI': 'http://localhost:9090/'};
 
-      suite.driverFactory = expectAsync2((Uri uri, Map<String, String> capabilities) {
+      suite.driverFactory =
+          expectAsync2((Uri uri, Map<String, String> capabilities) {
         expect(uri.host, 'localhost');
         expect(uri.port, 9090);
         return new Future.value(new MockWebDriver());

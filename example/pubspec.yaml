@@ -1,4 +1,4 @@
-name: test_webdriver_example
+name: example
 
 dependencies:
   pageloader: any
