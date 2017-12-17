@@ -21,67 +21,100 @@ class Suite {
     return Zone.current[#test_webdriver.suite];
   }
 
-  /// Function used to load the configuration.
-  _SuiteConfigurationLoader configurationLoader = loadConfig;
+  /// Factory function to load the [Configuration], by default this will use the
+  /// [loadConfig] function to load the "dart_webdriver.yaml" in the project
+  /// root.
+  final _SuiteConfigurationLoader configurationLoader;
 
-  /// Function used to initiate the [WebDriver].
-  _DriverFactory driverFactory = _defaultWebDriverFactory;
+  /// Factory used by [setUp] to initiate the [WebDriver]. This can be overridden
+  /// for test purpose.
+  final _DriverFactory driverFactory;
 
-  Map<String, String> environment = Platform.environment;
+  /// Contains configuration variables which are by default the environment
+  /// variables.
+  final Map<String, String> environment;
 
-  Configuration configuration;
-  String driverUri;
-  WebDriver driver;
-  PageLoader loader;
+  Configuration _configuration;
 
-  Map<String, String> capabilities = {};
+  /// Uri of the selenium server. This is passed using the environment variable
+  /// "DRIVER_URI".
+  String _driverUri;
+  WebDriver _driver;
 
-  Future handle(String testCase, [dynamic err]) async {
-    if (configuration == null) {
-      configuration = await configurationLoader();
+  /// The active [WebDriver] for this suite. The driver is only available after
+  /// [setUp] is called.
+  WebDriver get driver => _driver;
+
+  PageLoader _loader;
+
+  /// The [PageLoader] is only available after [setUp] is called.
+  PageLoader get loader => _loader;
+
+  Map<String, dynamic> _capabilities = {};
+
+  Suite(
+      {Map<String, dynamic> env,
+      this.driverFactory: _defaultWebDriverFactory,
+      this.configurationLoader: loadConfig})
+      : environment = env ?? Platform.environment;
+
+  /// Completes a testcase by checking for an [error] and capture a screenshot
+  /// in case the configuration is set up properly.
+  Future handle(String testCase, [dynamic error]) async {
+    if (_configuration == null) {
+      _configuration = await configurationLoader();
     }
 
-    if (configuration.captureScreenshotOnSuccess && err == null) {
+    if (_configuration.captureScreenshotOnSuccess && error == null) {
       await captureScreenshot(testCase, false);
-    } else if (configuration.captureScreenshotOnError && err != null) {
+    } else if (_configuration.captureScreenshotOnError && error != null) {
       await captureScreenshot(testCase, true);
     }
   }
 
+  /// Creates a screenshot with the a suffix "error" if [err] is set to true or
+  /// "success" in the [Configuration.screenshotPath] within the project root
+  /// directory.
   Future captureScreenshot(String t, bool err) async {
-    var file = new File('${configuration.screenshotPath}/${t}_${err
+    var file = new File('${_configuration.screenshotPath}/${t}_${err
         ? 'error'
         : 'success'}.png');
     return file.writeAsBytes(await driver.captureScreenshotAsList());
   }
 
+  /// Runs [body] within a new zone which has the [Suite] saved as a zone
+  /// variable. [Suite.current] than returns this instance instead of a new one.
   R run<R>(R body()) {
     return runZoned(body, zoneValues: {
       #test_webdriver.suite: this,
     });
   }
 
+  /// This method is registered to the setUpAll test method when using suite.
+  /// It initiates the [WebDriver] using the [driverFactory].
   Future setUp() async {
-    driverUri = environment['DRIVER_URI'];
+    _driverUri = environment['DRIVER_URI'];
 
     if (environment.containsKey('DRIVER_BROWSER')) {
-      capabilities['browser'] = environment['DRIVER_BROWSER'];
+      _capabilities['browser'] = environment['DRIVER_BROWSER'];
     }
 
     if (environment.containsKey('DRIVER_PLATFORM')) {
-      capabilities['platform'] = environment['DRIVER_PLATFORM'];
+      _capabilities['platform'] = environment['DRIVER_PLATFORM'];
     }
 
     if (environment.containsKey('DRIVER_VERSION')) {
-      capabilities['version'] = environment['DRIVER_VERSION'];
+      _capabilities['version'] = environment['DRIVER_VERSION'];
     }
 
-    driver = await driverFactory(Uri.parse(driverUri), capabilities);
-    loader = new WebDriverPageLoader(driver);
+    _driver = await driverFactory(Uri.parse(_driverUri), _capabilities);
+    _loader = new WebDriverPageLoader(_driver);
   }
 
+  /// This method is registered to the tearDownAll test method to shut down the
+  /// [WebDriver].
   Future tearDown() {
-    return driver.quit();
+    return _driver.quit();
   }
 }
 

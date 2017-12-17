@@ -20,16 +20,14 @@ void main() {
     });
 
     test('should setUp the webdriver', () {
-      var suite = new Suite();
-
-      suite.environment = {'DRIVER_URI': 'http://localhost:9090/'};
-
-      suite.driverFactory =
-          expectAsync2((Uri uri, Map<String, String> capabilities) {
-        expect(uri.host, 'localhost');
-        expect(uri.port, 9090);
-        return new Future.value(new MockWebDriver());
-      });
+      var suite = new Suite(
+          env: {'DRIVER_URI': 'http://localhost:9090/'},
+          driverFactory:
+              expectAsync2((Uri uri, Map<String, String> capabilities) {
+            expect(uri.host, 'localhost');
+            expect(uri.port, 9090);
+            return new Future.value(new MockWebDriver());
+          }));
 
       suite.setUp();
     });
