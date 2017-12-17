@@ -6,7 +6,7 @@ the testcases.
 
 # Writing Tests
 
-Tests which require pageobjects and a running webdriver should be within a suite block.
+Tests which require pageobjects and a running webdriver should be within a suite block. 
 
 ```dart
 import 'package:test_webdriver/test_webdriver.dart';
@@ -15,11 +15,22 @@ void main() {
   group('My Test-Suite', suite(() {
     
     test('handle login', withPO((LoginPO po) async {
-      expect(await po.handleLogin('test', 'test'), isTrue);      
+      expect(await po.handleLogin('test', 'test'), isTrue);
+      expect(await driver.title, contains('Dashboard of'));
     }));
   }));
 }
 ```
+
+There are wrapper functions which inject objects into their body function using the current `suite`:
+
+- `withPO` injects a pageobject into the body.
+- `withDriver` injects the WebDriver into the body.
+
+These helpers are available within the body function of the previous named wrappers:
+
+- `driver` returns the WebDriver
+- `object` looks up a PageObject 
 
 # Running Tests
 

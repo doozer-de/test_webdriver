@@ -1,15 +1,20 @@
 name: test_webdriver
 description: A helper library to write selenium tests using pageobjects.
-version: 0.0.1-alpha
+version: 0.0.1
+
+authors:
+  - Doozer Team <dev@doozer.de>
+
+homepage: https://github.com/doozer-de/test_webdriver
 
 environment:
   sdk: '>=1.24.0 <2.0.0'
 
 dependencies:
-  pageloader: any
-  test: any
-  webdriver: any
-  yaml: any
+  pageloader: '^2.2.6'
+  test: '^0.12.25'
+  webdriver: '^1.2.3'
+  yaml: '^2.1.11'
 
 dev_dependencies:
-  mockito: any
+  mockito: '^2.2.0'
