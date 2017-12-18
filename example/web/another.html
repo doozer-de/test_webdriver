@@ -8,5 +8,15 @@
     <div id="another">
         <p>Content is here</p>
     </div>
+
+    <script>
+        window.setTimeout(function() {
+            var dm = document.createElement('div');
+            dm.setAttribute('id', 'delayed');
+            dm.innerHTML = 'test';
+
+            document.body.appendChild(dm);
+        }, 5000);
+    </script>
 </body>
 </html>

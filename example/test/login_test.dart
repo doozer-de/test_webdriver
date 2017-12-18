@@ -26,6 +26,10 @@ void main() {
         withPO((AnotherPO po) async {
           await po.notExists.call();
         }, screenshotName: 'not_exists'));
+
+    test('should wait until object is available', withPO((DelayedPO po) async {
+      expect(await po.element.innerText, 'test');
+    }), timeout: new Timeout(const Duration(seconds: 6)));
   }));
 }
 
@@ -66,4 +70,10 @@ class AnotherPO {
   Lazy<PageLoaderElement> notExists;
 
   Future<String> get content => _content.innerText;
+}
+
+@ById('delayed')
+class DelayedPO {
+  @root
+  PageLoaderElement element;
 }

@@ -93,6 +93,10 @@ class Suite {
   /// This method is registered to the setUpAll test method when using suite.
   /// It initiates the [WebDriver] using the [driverFactory].
   Future setUp() async {
+    if (_configuration == null) {
+      _configuration = await configurationLoader();
+    }
+
     _driverUri = environment['DRIVER_URI'];
 
     if (environment.containsKey('DRIVER_BROWSER')) {
@@ -107,6 +111,8 @@ class Suite {
       _capabilities['version'] = environment['DRIVER_VERSION'];
     }
 
+    _capabilities.addAll(_configuration.capabilities);
+
     _driver = await driverFactory(Uri.parse(_driverUri), _capabilities);
     _loader = new WebDriverPageLoader(_driver);
   }
@@ -119,14 +125,5 @@ class Suite {
 }
 
 Future<WebDriver> _defaultWebDriverFactory(
-        Uri driverUri, Map<String, String> capabilities) =>
-    createDriver(
-        uri: driverUri,
-        desired: {}
-          ..addAll(Capabilities.chrome)
-          ..addAll(capabilities)
-          ..addAll({
-            'chromeOptions': {
-              'args': ['--headless']
-            }
-          }));
+        Uri driverUri, Map<String, dynamic> capabilities) =>
+    createDriver(uri: driverUri, desired: capabilities);

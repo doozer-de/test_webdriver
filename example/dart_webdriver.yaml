@@ -1,3 +1,6 @@
 screenshot:
   onError: true
   output: test_screenshots
+capabilities:
+  chromeOptions:
+    args: ['--headless']
