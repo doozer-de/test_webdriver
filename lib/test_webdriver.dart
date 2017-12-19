@@ -19,9 +19,7 @@ ts.Func0 suite(body()) {
 
   return () {
     suite.run(() {
-      ts.setUpAll(suite.setUp);
-      ts.tearDownAll(suite.tearDown);
-
+      suite.register(ts.setUpAll, ts.tearDownAll);
       body();
     });
   };

@@ -14,10 +14,10 @@ void main() {
       var suite = Suite.current;
 
       suite.run(() {
-        expect(suite, equals(Suite.current));
+        expect(suite, same(Suite.current));
       });
 
-      expect(suite, isNot(equals(Suite.current)));
+      expect(suite, isNot(same(Suite.current)));
     });
 
     test('should setUp the webdriver', () {

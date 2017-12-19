@@ -46,6 +46,7 @@ class Suite {
   WebDriver get driver => _driver;
 
   PageLoader _loader;
+  bool _registered = false;
 
   /// The [PageLoader] is only available after [setUp] is called.
   PageLoader get loader => _loader;
@@ -88,6 +89,17 @@ class Suite {
     return runZoned(body, zoneValues: {
       #test_webdriver.suite: this,
     });
+  }
+
+  /// Registers the suite in a test group in case it's not already registered.
+  void register(Function setUpAll, Function tearDownAll) {
+    if (_registered) {
+      return;
+    }
+
+    _registered = true;
+    setUpAll(setUp);
+    tearDownAll(tearDown);
   }
 
   /// This method is registered to the setUpAll test method when using suite.

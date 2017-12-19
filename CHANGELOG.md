@@ -1,3 +1,7 @@
+## 0.0.3
+
+* Support nested suites calls to share only one suite
+
 ## 0.0.2
 
 * Support waitFor functionality within `withPO` 

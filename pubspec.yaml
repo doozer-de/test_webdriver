@@ -1,6 +1,6 @@
 name: test_webdriver
 description: A helper library to write selenium tests using pageobjects.
-version: 0.0.2
+version: 0.0.3
 
 authors:
   - Doozer Team <dev@doozer.de>
