@@ -54,7 +54,6 @@ Function withPO(Function fn,
     bool useWaitFor: true,
     Duration timeout: const Duration(days: 1),
     Suite forceSuite}) {
-
   var suite = forceSuite ?? Suite.current;
   var mirr = reflect(fn) as ClosureMirror;
 
@@ -69,8 +68,8 @@ Function withPO(Function fn,
         waitings = mirr.function.parameters
             .map((param) => param.type.reflectedType)
             .map((type) => waitFor(() => suite.loader.getInstance(type),
-                matcher: ts.isNot(
-                    ts.throwsA(new ts.isInstanceOf<StateError>())),
+                matcher:
+                    ts.isNot(ts.throwsA(new ts.isInstanceOf<StateError>())),
                 timeout: timeout));
       } else {
         waitings = mirr.function.parameters

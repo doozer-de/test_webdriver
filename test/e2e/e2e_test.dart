@@ -43,7 +43,8 @@ Future main() async {
           expect(await po.content, equals('Hello'));
         }));
 
-        test('should contain the HelloPO and SecondPO', withPO((HelloPO po, SecondPO po2) async {
+        test('should contain the HelloPO and SecondPO',
+            withPO((HelloPO po, SecondPO po2) async {
           expect(await po.content, equals('Hello'));
           expect(await po2.content, equals('Test 2'));
         }));
@@ -51,23 +52,30 @@ Future main() async {
         expectTestsFail('should fail because PO errors', () {
           // force suite is necessary because of the different zones within
           // expectTestsFail
-          test('trying to fetch not existing PO', withPO((NotExistingPO po) {
-            expect(true, isTrue);
-          }, forceSuite: testSuite, useWaitFor: false));
+          test(
+              'trying to fetch not existing PO',
+              withPO((NotExistingPO po) {
+                expect(true, isTrue);
+              }, forceSuite: testSuite, useWaitFor: false));
 
-          test('trying to fetch invalid PO', withPO((InvalidExistingPO po) {
-            expect(true, isTrue);
-          }, forceSuite: testSuite, useWaitFor: false));
+          test(
+              'trying to fetch invalid PO',
+              withPO((InvalidExistingPO po) {
+                expect(true, isTrue);
+              }, forceSuite: testSuite, useWaitFor: false));
         });
 
         group('sanity test PO exceptions', () {
           test('should throw not existing PO object', withDriver((_) async {
-            expect(object(NotExistingPO), throwsA(new isInstanceOf<StateError>()));
+            expect(
+                object(NotExistingPO), throwsA(new isInstanceOf<StateError>()));
           }));
 
           test('should throw invalid PO object', withDriver((_) async {
-            expect(object(InvalidExistingPO), throwsA(new isInstanceOf<PageLoaderException>()));
-            expect(object(InvalidExistingPO), throwsA(isNot(new isInstanceOf<StateError>())));
+            expect(object(InvalidExistingPO),
+                throwsA(new isInstanceOf<PageLoaderException>()));
+            expect(object(InvalidExistingPO),
+                throwsA(isNot(new isInstanceOf<StateError>())));
           }));
         });
       });

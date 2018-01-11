@@ -17,10 +17,10 @@ class NotExistingPO {}
 @ByCss('.invalid-po')
 class InvalidExistingPO {
   @ByCss('.not-exists')
-  PageLoaderElement _notExisting;
+  PageLoaderElement notExisting;
 
   @ByCss('.exists')
-  PageLoaderElement _child;
+  PageLoaderElement child;
 }
 
 @ByCss('.test2')
