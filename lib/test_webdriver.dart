@@ -52,31 +52,40 @@ Function withDriver(Function fn) {
 Function withPO(Function fn,
     {String screenshotName,
     bool useWaitFor: true,
-    Duration timeout: const Duration(days: 1)}) {
-  var suite = Suite.current;
+    Duration timeout: const Duration(days: 1),
+    Suite forceSuite}) {
+
+  var suite = forceSuite ?? Suite.current;
   var mirr = reflect(fn) as ClosureMirror;
 
   assert(mirr.function.parameters.isNotEmpty,
-      'expect withPO body to have an argument');
-
-  var argType = mirr.function.parameters.first.type.reflectedType;
+      'expect withPO body to have at least one argument');
 
   return () async {
     return suite.run(() async {
-      var po;
+      Iterable<Future<dynamic>> waitings;
 
       if (useWaitFor) {
-        po = await waitFor(() => suite.loader.getInstance(argType),
-            matcher: ts.isNot(
-                ts.throwsA(new ts.isInstanceOf<NoSuchElementException>())),
-            timeout: timeout);
+        waitings = mirr.function.parameters
+            .map((param) => param.type.reflectedType)
+            .map((type) => waitFor(() => suite.loader.getInstance(type),
+                matcher: ts.isNot(
+                    ts.throwsA(new ts.isInstanceOf<StateError>())),
+                timeout: timeout));
       } else {
-        po = await suite.loader.getInstance(argType);
+        waitings = mirr.function.parameters
+            .map((param) => param.type.reflectedType)
+            .map((type) => suite.loader.getInstance(type));
       }
+
+      List<dynamic> pageObjects = await Future.wait(waitings);
 
       var exception;
       try {
-        await fn(po);
+        var result = Function.apply(fn, pageObjects);
+        if (result is Future) {
+          await result;
+        }
       } catch (ex) {
         exception = ex;
       } finally {

@@ -1,3 +1,8 @@
+## 0.0.3+1
+
+* Only catch `StateError` in `withPO` (populate invalid PageObject exceptions `PageLoaderException` correctly)
+* Support multiple PageObjects arguments in `withPO`
+
 ## 0.0.3
 
 * Support nested suites calls to share only one suite
