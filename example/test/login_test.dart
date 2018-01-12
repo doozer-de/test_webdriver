@@ -9,11 +9,11 @@ void main() {
         withDriver((driver) => driver.get('http://localhost:8080/index.html')));
 
     test('should contain the login form', withPO((LoginPO po) async {
-      await po.form.login('test', 'test');
+      await po.form.login(config.username, config.password);
       var uri = Uri.parse(await driver.currentUrl);
 
-      expect(uri.queryParameters['username'], 'test');
-      expect(uri.queryParameters['password'], 'test');
+      expect(uri.queryParameters['username'], config.username);
+      expect(uri.queryParameters['password'], config.password);
     }));
 
     test('should navigate to another page', withPO((LoginPO po) async {
@@ -64,6 +64,10 @@ class LoginFormPO {
 class LoginTestConfig {
   String username;
   String password;
+
+  LoginTestConfig.fromMap(Map<String, dynamic> config)
+      : username = config['username'] as String,
+        password = config['password'] as String;
 }
 
 @ById('another')
