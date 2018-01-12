@@ -1,5 +1,5 @@
 language: dart
-sudo: false
+sudo: required
 
 addons:
   chrome: stable
@@ -8,10 +8,21 @@ dart:
   - dev
   - stable
 
-dart_task:
-  - dartanalyzer: --fatal-warnings .
-  - dartfmt
-  - test
+env:
+  - TASK=dartanalyzer
+  - TASK=dartfmt
+  - TASK=test
+  - PKG=example TASK=dartanalyzer
+  - PKG=example TASK=dartfmt
+
+script: ./tool/travis.sh
+
+matrix:
+  exclude:
+    - dart: dev
+      env: PKG=example TASK=dartfmt
+    - dart: dev
+      env: TASK=dartfmt
 
 install:
   - wget -N http://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip -P ~/
