@@ -27,9 +27,11 @@ Future main() async {
 
   testSuite.run(() {
     group('e2e testcase', suite(() {
-      tearDownAll(() async {
-        await server.close();
-        await chromeDriver.kill();
+      setUpAll(() {
+        addTearDown(() async {
+          await server.close();
+          await chromeDriver.kill();
+        });
       });
 
       group('run the suite', () {
