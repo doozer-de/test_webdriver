@@ -49,6 +49,10 @@ Function withDriver(Function fn) {
 /// Use [timeout] to define a separate timeout for the pageloader to fetch the
 /// pageobject apart from the test specific timeout. For further details on the
 /// default timeout, see [test] package documentation.
+///
+/// Use [forceSuite] if there's a separated zone layer used within your
+/// testcases. This is for example the case when using [metatest] package. See
+/// test/e2e/e2e_test.dart for a proper workaround.
 Function withPO(Function fn,
     {String screenshotName,
     bool useWaitFor: true,

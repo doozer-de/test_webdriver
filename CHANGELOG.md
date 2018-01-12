@@ -1,7 +1,8 @@
-## 0.0.3+1
+## 0.0.4
 
 * Only catch `StateError` in `withPO` (populate invalid PageObject exceptions `PageLoaderException` correctly)
 * Support multiple PageObjects arguments in `withPO`
+* Add `forceSuite` parameter to `withPO` to `
 
 ## 0.0.3
 
