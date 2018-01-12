@@ -4,9 +4,9 @@ import 'package:test_webdriver/test_webdriver.dart';
 import 'package:pageloader/objects.dart';
 
 void main() {
-  group('login', suite(() {
-    setUpAll(withDriver(
-        (WebDriver driver) => driver.get('http://localhost:8080/index.html')));
+  group('login', suite((LoginTestConfig config) {
+    setUpAll(
+        withDriver((driver) => driver.get('http://localhost:8080/index.html')));
 
     test('should contain the login form', withPO((LoginPO po) async {
       await po.form.login('test', 'test');
@@ -59,6 +59,11 @@ class LoginFormPO {
     await _password.type(password);
     await _submit.click();
   }
+}
+
+class LoginTestConfig {
+  String username;
+  String password;
 }
 
 @ById('another')

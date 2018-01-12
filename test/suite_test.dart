@@ -29,8 +29,7 @@ void main() {
             expect(uri.port, 9090);
             return new Future.value(new MockWebDriver());
           }),
-          configurationLoader: () =>
-              new Future.value(new Configuration.fromMap({})));
+          configurationLoader: () => new Configuration.fromMap({}));
 
       suite.setUp();
     });
@@ -47,10 +46,9 @@ void main() {
                 equals({'test': true, 'platform': 'testplatform'}));
             return new Future.value(new MockWebDriver());
           }),
-          configurationLoader: () =>
-              new Future.value(new Configuration.fromMap({
+          configurationLoader: () => new Configuration.fromMap({
                 'capabilities': {'test': true},
-              })));
+              }));
 
       suite.setUp();
     });

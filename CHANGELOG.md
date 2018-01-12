@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Support configuration of test scenarios 
+
 ## 0.0.4
 
 * Only catch `StateError` in `withPO` (populate invalid PageObject exceptions `PageLoaderException` correctly)

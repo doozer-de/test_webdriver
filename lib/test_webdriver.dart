@@ -11,30 +11,26 @@ import 'src/backend/suite.dart';
 export 'package:test/test.dart';
 export 'package:webdriver/io.dart' show WebDriver;
 
+typedef FutureOr<R> _ReturnFunc<R>();
+
 /// Creates a new test suite with a selenium context. It will register a
 /// setUpAll function to initiate the webdriver and a tearDown to deregister
 /// it.
-ts.Func0 suite(body()) {
+Function suite(Function body) {
   var suite = Suite.current;
 
   return () {
     suite.run(() {
       suite.register(ts.setUpAll, ts.tearDownAll);
-      body();
+      suite.apply(body);
     });
   };
 }
 
 /// Injects the driver of the current suite into the passed function.
-Function withDriver(Function fn) {
+_ReturnFunc<R> withDriver<R>(R fn(WebDriver w)) {
   var suite = Suite.current;
-
-  return () async {
-    return suite.run(() async {
-      var driver = suite.driver;
-      await fn(driver);
-    });
-  };
+  return () => suite.run(() => fn(suite.driver));
 }
 
 /// Detects the type of the first argument within the passed [fn] function,

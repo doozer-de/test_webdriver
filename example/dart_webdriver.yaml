@@ -1,3 +1,8 @@
+configuration:
+  scenario1:
+    username: test
+  scenario2:
+    username: test2
 screenshot:
   onError: true
   output: test_screenshots

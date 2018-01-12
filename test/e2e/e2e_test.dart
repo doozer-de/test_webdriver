@@ -15,18 +15,27 @@ Future main() async {
   Suite testSuite = new Suite(
       env: {
         'DRIVER_URI': 'http://localhost:9515',
+        'TEST_CASE': 'scenario2',
       },
-      configurationLoader: () => new Future.value(new Configuration.fromMap({
+      configurationLoader: () => new Configuration.fromMap({
+            'configuration': {
+              'scenario1': {
+                'username': 'test',
+              },
+              'scenario2': {
+                'username': 'test2',
+              },
+            },
             'capabilities': {
               'chromeOptions': {
                 'args': ['--headless']
               }
             }
-          })));
+          }));
   Process chromeDriver = await setupChromeDriver();
 
   testSuite.run(() {
-    group('e2e testcase', suite(() {
+    group('e2e testcase', suite((TestCaseConfig config) {
       setUpAll(() {
         addTearDown(() async {
           await server.close();
@@ -35,6 +44,10 @@ Future main() async {
       });
 
       group('run the suite', () {
+        test('should contain the proper configuration', () {
+          expect(config.username, equals('test2'));
+        });
+
         test('should open the page', withDriver((WebDriver driver) async {
           var addr = 'http://${server.address.host}:${server.port}/';
           await driver.get(addr);

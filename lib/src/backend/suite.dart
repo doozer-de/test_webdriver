@@ -6,7 +6,7 @@ import 'package:webdriver/io.dart';
 
 import 'configuration.dart';
 
-typedef Future<Configuration> _SuiteConfigurationLoader();
+typedef Configuration _SuiteConfigurationLoader();
 typedef Future<WebDriver> _DriverFactory(
     Uri driverUri, Map<String, String> capabilities);
 
@@ -102,11 +102,20 @@ class Suite {
     tearDownAll(tearDown);
   }
 
+  /// Runs the suite with the proper configuration applied if required.
+  void apply(Function body) {
+    if (_configuration == null) {
+      _configuration = configurationLoader();
+    }
+
+    _configuration.apply(body, environment['TEST_CASE']);
+  }
+
   /// This method is registered to the setUpAll test method when using suite.
   /// It initiates the [WebDriver] using the [driverFactory].
   Future setUp() async {
     if (_configuration == null) {
-      _configuration = await configurationLoader();
+      _configuration = configurationLoader();
     }
 
     _driverUri = environment['DRIVER_URI'];

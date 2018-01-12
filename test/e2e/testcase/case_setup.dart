@@ -22,3 +22,10 @@ Future<HttpServer> setupServer() => io.serve(
     0);
 
 Future<Process> setupChromeDriver() => Process.start('chromedriver', []);
+
+class TestCaseConfig {
+  String username;
+
+  TestCaseConfig.fromMap(Map<String, dynamic> data)
+      : username = data['username'] as String;
+}
