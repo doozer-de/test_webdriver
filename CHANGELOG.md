@@ -1,3 +1,7 @@
+## 0.0.4+1
+
+* Fix population of `PageLoaderException`
+
 ## 0.0.4
 
 * Only catch `StateError` in `withPO` (populate invalid PageObject exceptions `PageLoaderException` correctly)

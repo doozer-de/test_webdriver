@@ -3,6 +3,7 @@ library test_webdriver;
 import 'dart:async';
 import 'dart:mirrors';
 
+import 'package:pageloader/webdriver.dart';
 import 'package:test/test.dart' as ts;
 import 'package:webdriver/io.dart';
 import 'package:webdriver/support/async.dart';
@@ -71,7 +72,9 @@ Function withPO(Function fn,
       if (useWaitFor) {
         waitings = mirr.function.parameters
             .map((param) => param.type.reflectedType)
-            .map((type) => waitFor(() => suite.loader.getInstance(type),
+            .map((type) => waitFor(
+                () => suite.loader.getInstance(type).catchError((err) => err,
+                    test: (err) => err is PageLoaderException),
                 matcher:
                     ts.isNot(ts.throwsA(new ts.isInstanceOf<StateError>())),
                 timeout: timeout));
@@ -82,6 +85,11 @@ Function withPO(Function fn,
       }
 
       List<dynamic> pageObjects = await Future.wait(waitings);
+
+      // throw exceptions when exists
+      pageObjects
+          .where((po) => po is PageLoaderException)
+          .forEach((e) => throw e);
 
       var exception;
       try {

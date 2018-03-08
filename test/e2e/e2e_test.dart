@@ -63,8 +63,27 @@ Future main() async {
           test(
               'trying to fetch invalid PO',
               withPO((InvalidExistingPO po) {
-                expect(true, isTrue);
-              }, forceSuite: testSuite, useWaitFor: false));
+                expect(true, isFalse);
+              }, forceSuite: testSuite, useWaitFor: true));
+        }, timeout: new Timeout(const Duration(seconds: 3)));
+
+        test('withPO should throw the proper exceptions', () async {
+          expect(
+              withPO((InvalidExistingPO po) => expect(true, isFalse),
+                  useWaitFor: false, forceSuite: testSuite)(),
+              throwsA(allOf(new isInstanceOf<PageLoaderException>())));
+
+          expect(
+              withPO((InvalidExistingPO po) => expect(true, isFalse),
+                  useWaitFor: true, forceSuite: testSuite)(),
+              anyOf(
+                  throwsA(new isInstanceOf<PageLoaderException>()), completes));
+
+          expect(
+              withPO((NotExistingPO po) => expect(true, isFalse),
+                  useWaitFor: false, forceSuite: testSuite)(),
+              throwsA(allOf(new isInstanceOf<StateError>(),
+                  isNot(new isInstanceOf<PageLoaderException>()))));
         });
 
         group('sanity test PO exceptions', () {
