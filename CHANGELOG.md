@@ -1,3 +1,7 @@
+## 0.0.5
+
+* Print PageObject name within exception if `PageLoaderException` occurs
+
 ## 0.0.4+1
 
 * Fix population of `PageLoaderException`

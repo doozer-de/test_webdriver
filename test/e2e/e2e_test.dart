@@ -71,19 +71,22 @@ Future main() async {
           expect(
               withPO((InvalidExistingPO po) => expect(true, isFalse),
                   useWaitFor: false, forceSuite: testSuite)(),
-              throwsA(allOf(new isInstanceOf<PageLoaderException>())));
+              throwsA(allOf(
+                  new isInstanceOf<TestWebDriverException>(),
+                  predicate((TestWebDriverException ex) =>
+                      ex.toString().contains('InvalidExistingPO')))));
 
           expect(
               withPO((InvalidExistingPO po) => expect(true, isFalse),
                   useWaitFor: true, forceSuite: testSuite)(),
-              anyOf(
-                  throwsA(new isInstanceOf<PageLoaderException>()), completes));
+              anyOf(throwsA(new isInstanceOf<TestWebDriverException>()),
+                  completes));
 
           expect(
               withPO((NotExistingPO po) => expect(true, isFalse),
                   useWaitFor: false, forceSuite: testSuite)(),
               throwsA(allOf(new isInstanceOf<StateError>(),
-                  isNot(new isInstanceOf<PageLoaderException>()))));
+                  isNot(new isInstanceOf<TestWebDriverException>()))));
         });
 
         group('sanity test PO exceptions', () {

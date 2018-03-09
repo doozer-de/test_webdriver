@@ -81,15 +81,21 @@ Function withPO(Function fn,
       } else {
         waitings = mirr.function.parameters
             .map((param) => param.type.reflectedType)
-            .map((type) => suite.loader.getInstance(type));
+            .map((type) => suite.loader.getInstance(type).catchError(
+                (err) => err,
+                test: (err) => err is PageLoaderException));
       }
 
       List<dynamic> pageObjects = await Future.wait(waitings);
 
       // throw exceptions when exists
-      pageObjects
-          .where((po) => po is PageLoaderException)
-          .forEach((e) => throw e);
+      for (var i = 0; i < mirr.function.parameters.length; i++) {
+        if (pageObjects[i] is PageLoaderException) {
+          throw new TestWebDriverException(
+              mirr.function.parameters[i].type.simpleName.toString(),
+              pageObjects[i]);
+        }
+      }
 
       var exception;
       try {
@@ -119,3 +125,14 @@ WebDriver get driver => Suite.current.driver;
 /// called within functions that provide the suite zone environment like:
 /// withPO, withDriver.
 Future<T> object<T>(Type t) => Suite.current.loader.getInstance(t);
+
+class TestWebDriverException implements Exception {
+  final PageLoaderException pageLoaderException;
+  final String pageObjectType;
+
+  TestWebDriverException(this.pageObjectType, this.pageLoaderException);
+
+  String toString() =>
+      '''TestWebDriverException for pageobject: ${pageObjectType}
+  $pageLoaderException''';
+}
