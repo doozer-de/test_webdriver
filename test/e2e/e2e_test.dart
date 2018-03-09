@@ -26,10 +26,29 @@ Future main() async {
   Process chromeDriver = await setupChromeDriver();
 
   testSuite.run(() {
+    var setUpCalled = false;
+    var innerSetUpCalled = false;
+
+    suiteSetUp(() {
+      setUpCalled = true;
+    });
+
     group('e2e testcase', suite(() {
+      suiteSetUp(() {
+        innerSetUpCalled = true;
+      });
+
       tearDownAll(() async {
         await chromeDriver.kill();
         await server.close();
+      });
+
+      test('should call `suiteSetUp` for outer suite', () {
+        expect(setUpCalled, isTrue);
+      });
+
+      test('should not call `suiteSetUp` for inner suite', () {
+        expect(innerSetUpCalled, isFalse);
       });
 
       group('run the suite', () {

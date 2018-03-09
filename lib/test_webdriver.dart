@@ -116,6 +116,26 @@ Function withPO(Function fn,
   };
 }
 
+/// Registers a function to be run once before all tests and only in the main
+/// suite.
+/// If the suite is nested within another suite, this callback will be quietly
+/// ignored. This can be useful to setup initial data used for the testcase
+/// when it runs as a single test suite. When wrapped in a chain of tests, this
+/// data may be provided by other tests which can run in a complete case.
+void suiteSetUp(callback()) {
+  Suite.current.setUpCallback = callback;
+}
+
+/// Registers a function to be run once after all tests and only in the main
+/// suite.
+/// If the suite is nested within another suite, this callback will be quietly
+/// ignored. This can be useful to remove initial data used for the testcase
+/// when it runs as a single test suite. When wrapped in a chain of tests, this
+/// data may be provided by other tests which can run in a complete case.
+void suiteTearDown(callback()) {
+  Suite.current.tearDownCallback = callback;
+}
+
 /// Contains the current active web driver for this suite. This can only be
 /// performed within functions that provide the suite zone environment like:
 /// withPO, withDriver.

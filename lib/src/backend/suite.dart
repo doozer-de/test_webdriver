@@ -18,7 +18,10 @@ class Suite {
       return new Suite();
     }
 
-    return Zone.current[#test_webdriver.suite];
+    Suite suite = Zone.current[#test_webdriver.suite];
+    suite._nested = (Zone.current[#test_webdriver.level] ?? 0) > 1;
+
+    return suite;
   }
 
   /// Factory function to load the [Configuration], by default this will use the
@@ -35,6 +38,7 @@ class Suite {
   final Map<String, String> environment;
 
   Configuration _configuration;
+  bool _nested = false;
 
   /// Uri of the selenium server. This is passed using the environment variable
   /// "DRIVER_URI".
@@ -48,6 +52,20 @@ class Suite {
 
   PageLoader _loader;
   bool _registered = false;
+
+  Function _tearDownCallback;
+  set tearDownCallback(callback()) {
+    if (!_nested) {
+      _tearDownCallback = callback;
+    }
+  }
+
+  Function _setUpCallback;
+  set setUpCallback(callback()) {
+    if (!_nested) {
+      _setUpCallback = callback;
+    }
+  }
 
   /// The [PageLoader] is only available after [setUp] is called.
   PageLoader get loader => _loader;
@@ -89,6 +107,7 @@ class Suite {
   R run<R>(R body()) {
     return runZoned(body, zoneValues: {
       #test_webdriver.suite: this,
+      #test_webdriver.level: (Zone.current[#test_webdriver.level] ?? 0) + 1,
     });
   }
 
@@ -128,15 +147,22 @@ class Suite {
 
     _driver = await driverFactory(Uri.parse(_driverUri), _capabilities);
     _loader = new WebDriverPageLoader(_driver);
+
+    if (_setUpCallback != null) {
+      await _setUpCallback();
+    }
   }
 
   /// This method is registered to the tearDownAll test method to shut down the
   /// [WebDriver].
   Future<dynamic> tearDown() async {
+    if (_tearDownCallback != null) {
+      await _tearDownCallback();
+    }
+
     if (_driverQuitted) {
       return true;
     }
-
     _driverQuitted = true;
     return _driver.quit().catchError((_) {
       /* ignore if socket is already closed */

@@ -1,3 +1,9 @@
+## 0.0.6
+
+* Add `suiteSetUp` for initiators within the parent `suite`
+* Add `suiteTearDown` for tear down callbacks within the parent `suite`
+* Add `Suite.storage` to provide a key-value-storage within a `suite` shared across parent, child suites
+
 ## 0.0.5
 
 * Print PageObject name within exception if `PageLoaderException` occurs
