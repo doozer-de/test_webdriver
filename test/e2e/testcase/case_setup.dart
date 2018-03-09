@@ -6,7 +6,8 @@ import 'package:shelf/shelf_io.dart' as io;
 
 Future<HttpServer> setupServer() => io.serve(
     const shelf.Pipeline().addHandler((_) => new shelf.Response(200,
-        headers: {'Content-Type': 'text/html'}, body: '''
+        headers: {'Content-Type': 'text/html'},
+        body: '''
   <html>
     <body>
       <div class="hello">Hello</div>
