@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show File, Platform;
+import 'dart:io' show File, Platform, SocketException;
 
 import 'package:pageloader/webdriver.dart';
 import 'package:webdriver/io.dart';
@@ -40,6 +40,7 @@ class Suite {
   /// "DRIVER_URI".
   String _driverUri;
   WebDriver _driver;
+  bool _driverQuitted = false;
 
   /// The active [WebDriver] for this suite. The driver is only available after
   /// [setUp] is called.
@@ -131,8 +132,15 @@ class Suite {
 
   /// This method is registered to the tearDownAll test method to shut down the
   /// [WebDriver].
-  Future tearDown() {
-    return _driver.quit();
+  Future<dynamic> tearDown() async {
+    if (_driverQuitted) {
+      return true;
+    }
+
+    _driverQuitted = true;
+    return _driver.quit().catchError((_) {
+      /* ignore if socket is already closed */
+    }, test: (e) => e is SocketException);
   }
 }
 

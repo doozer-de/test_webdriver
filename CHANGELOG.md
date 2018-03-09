@@ -1,6 +1,7 @@
 ## 0.0.4+1
 
 * Fix population of `PageLoaderException`
+* Ignore `SocketException` when `Suite` executes `tearDownAll` (appears when the driver is no longer reachable)
 
 ## 0.0.4
 
