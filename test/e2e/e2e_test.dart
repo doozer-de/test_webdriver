@@ -25,12 +25,15 @@ Future main() async {
           })));
   Process chromeDriver = await setupChromeDriver();
 
+  testSuite.internalStorage['test'] = true;
+
   testSuite.run(() {
     var setUpCalled = false;
     var innerSetUpCalled = false;
 
     suiteSetUp(() {
       setUpCalled = true;
+      Suite.storage['init'] = true;
     });
 
     group('e2e testcase', suite(() {
@@ -43,6 +46,10 @@ Future main() async {
         await server.close();
       });
 
+      test('test suite should be identical', withDriver((_) {
+        expect(identical(testSuite, Suite.current), isTrue);
+      }));
+
       test('should call `suiteSetUp` for outer suite', () {
         expect(setUpCalled, isTrue);
       });
@@ -50,6 +57,14 @@ Future main() async {
       test('should not call `suiteSetUp` for inner suite', () {
         expect(innerSetUpCalled, isFalse);
       });
+
+      test('storage should be shared across suites', withDriver((_) {
+        expect(Suite.storage['test'], isTrue);
+      }));
+
+      test('suiteSetUp should be called in suite zone', withDriver((_) {
+        expect(Suite.storage['init'], isTrue);
+      }));
 
       group('run the suite', () {
         test('should open the page', withDriver((WebDriver driver) async {

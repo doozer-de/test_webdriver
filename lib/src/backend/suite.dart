@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' show File, Platform, SocketException;
 
+import 'package:meta/meta.dart';
 import 'package:pageloader/webdriver.dart';
 import 'package:webdriver/io.dart';
 
@@ -24,6 +25,12 @@ class Suite {
     return suite;
   }
 
+  /// Storage can be used to share data across suites.
+  static Map<String, dynamic> get storage {
+    var suite = current;
+    return suite._storage;
+  }
+
   /// Factory function to load the [Configuration], by default this will use the
   /// [loadConfig] function to load the "dart_webdriver.yaml" in the project
   /// root.
@@ -36,6 +43,12 @@ class Suite {
   /// Contains configuration variables which are by default the environment
   /// variables.
   final Map<String, String> environment;
+
+  /// Storage can be used to share data across suites.
+  final Map<String, dynamic> _storage = {};
+
+  @visibleForTesting
+  Map<String, dynamic> get internalStorage => _storage;
 
   Configuration _configuration;
   bool _nested = false;
@@ -149,7 +162,7 @@ class Suite {
     _loader = new WebDriverPageLoader(_driver);
 
     if (_setUpCallback != null) {
-      await _setUpCallback();
+      await run(_setUpCallback);
     }
   }
 
@@ -157,7 +170,7 @@ class Suite {
   /// [WebDriver].
   Future<dynamic> tearDown() async {
     if (_tearDownCallback != null) {
-      await _tearDownCallback();
+      await run(_tearDownCallback);
     }
 
     if (_driverQuitted) {
