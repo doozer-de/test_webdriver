@@ -126,12 +126,14 @@ WebDriver get driver => Suite.current.driver;
 /// withPO, withDriver.
 Future<T> object<T>(Type t) => Suite.current.loader.getInstance(t);
 
+/// Wraps the [PageLoaderException] to properly print the affected PageObject.
 class TestWebDriverException implements Exception {
   final PageLoaderException pageLoaderException;
   final String pageObjectType;
 
   TestWebDriverException(this.pageObjectType, this.pageLoaderException);
 
+  @override
   String toString() =>
       '''TestWebDriverException for pageobject: ${pageObjectType}
   $pageLoaderException''';
